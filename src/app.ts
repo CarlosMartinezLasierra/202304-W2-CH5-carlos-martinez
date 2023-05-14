@@ -41,16 +41,81 @@ class GameOfLife {
 
     if (cell.alive) {
       if (aliveNeighbors < 2 || aliveNeighbors > 3) {
-        return false; // Muere por soledad o sobrepoblación
+        return false;
       }
 
-      return true; // Sobrevive
+      return true;
     }
 
     if (aliveNeighbors === 3) {
-      return true; // Nace
+      return true;
     }
 
-    return false; // Permanece muerta
+    return false;
   }
 
+  countAliveNeighbors(x: number, y: number): number {
+    let count = 0;
+
+    for (let i = -1; i <= 1; i++) {
+      for (let j = -1; j <= 1; j++) {
+        if (i === 0 && j === 0) continue;
+
+        const neighborX = x + j;
+        const neighborY = y + i;
+
+        if (
+          neighborX >= 0 &&
+          neighborX < this.width &&
+          neighborY >= 0 &&
+          neighborY < this.height
+        ) {
+          if (this.grid[neighborY][neighborX].alive) {
+            count++;
+          }
+        }
+      }
+    }
+
+    return count;
+  }
+
+  update() {
+    // Calcular el siguiente estado de cada celda
+    for (let i = 0; i < this.height; i++) {
+      for (let j = 0; j < this.width; j++) {
+        this.grid[i][j].nextState = this.getNextState(j, i);
+      }
+    }
+
+    for (let i = 0; i < this.height; i++) {
+      for (let j = 0; j < this.width; j++) {
+        this.grid[i][j].alive = this.grid[i][j].nextState;
+      }
+    }
+  }
+
+  print() {
+    for (let i = 0; i < this.height; i++) {
+      let row = "";
+      for (let j = 0; j < this.width; j++) {
+        row += this.grid[i][j].alive ? "■ " : "□ ";
+      }
+
+      console.log(row);
+    }
+  }
+}
+
+const game = new GameOfLife(10, 10);
+
+game.setAlive(3, 4, true);
+game.setAlive(4, 4, true);
+game.setAlive(5, 4, true);
+
+for (let i = 0; i < 5; i++) {
+  console.log(`Iteración ${i + 1}:`);
+  game.print();
+  game.update();
+  console.log("--------------------");
+}
