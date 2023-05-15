@@ -1,12 +1,5 @@
-class Cell {
-  alive: boolean;
-  nextState: boolean;
-
-  constructor(alive: boolean) {
-    this.alive = alive;
-    this.nextState = false;
-  }
-}
+import { Cell } from "./Cell";
+import { countAliveNeighbors } from "./checkneighbour";
 
 class GameOfLife {
   width: number;
@@ -18,7 +11,6 @@ class GameOfLife {
     this.height = height;
     this.grid = [];
 
-    // Inicializar el tablero con celdas muertas
     for (let i = 0; i < height; i++) {
       const row: Cell[] = [];
       for (let j = 0; j < width; j++) {
@@ -37,7 +29,7 @@ class GameOfLife {
 
   getNextState(x: number, y: number): boolean {
     const cell = this.grid[y][x];
-    const aliveNeighbors = this.countAliveNeighbors(x, y);
+    const aliveNeighbors = countAliveNeighbors(this.grid, x, y);
 
     if (cell.alive) {
       if (aliveNeighbors < 2 || aliveNeighbors > 3) {
@@ -54,34 +46,7 @@ class GameOfLife {
     return false;
   }
 
-  countAliveNeighbors(x: number, y: number): number {
-    let count = 0;
-
-    for (let i = -1; i <= 1; i++) {
-      for (let j = -1; j <= 1; j++) {
-        if (i === 0 && j === 0) continue;
-
-        const neighborX = x + j;
-        const neighborY = y + i;
-
-        if (
-          neighborX >= 0 &&
-          neighborX < this.width &&
-          neighborY >= 0 &&
-          neighborY < this.height
-        ) {
-          if (this.grid[neighborY][neighborX].alive) {
-            count++;
-          }
-        }
-      }
-    }
-
-    return count;
-  }
-
   update() {
-    // Calcular el siguiente estado de cada celda
     for (let i = 0; i < this.height; i++) {
       for (let j = 0; j < this.width; j++) {
         this.grid[i][j].nextState = this.getNextState(j, i);
@@ -114,7 +79,7 @@ game.setAlive(4, 4, true);
 game.setAlive(5, 4, true);
 
 for (let i = 0; i < 5; i++) {
-  console.log(`Iteración ${i + 1}:`);
+  console.log(`Iteracion ${i + 1}:`);
   game.print();
   game.update();
   console.log("--------------------");
